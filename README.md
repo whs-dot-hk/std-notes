@@ -8,6 +8,7 @@
 {config,...}:let inherit (config._module.args) pkgs;in
 ```
 ```nix
+# builtins.scopedImport
 let
   inherit (inputs) nixpkgs;
   inherit (cell) block;
