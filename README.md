@@ -42,3 +42,17 @@ https://github.com/divnix/std/blob/676d8356a3c2d3bac7aa9e27508c2f6651cfbe0e/src/
 -        target: ${{ fromJSON(needs.discover.outputs.hits).deployments.apply }}
 +        target: ${{ fromJSON(needs.deployments.outputs.dev-preview) }}
 ```
+```nix
+  cog = (std.lib.dev.mkNixago std.data.configs.cog) {
+    data = {
+      changelog = {
+        remote = "github.com";
+        repository = "hive";
+        owner = "divnix";
+      };
+      post_bump_hooks = dmerge.append [
+        "echo Go to and post: https://discourse.nixos.org/..."
+      ];
+    };
+  };
+```
