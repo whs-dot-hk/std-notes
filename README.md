@@ -21,3 +21,24 @@ https://github.com/divnix/std/blob/676d8356a3c2d3bac7aa9e27508c2f6651cfbe0e/src/
 ```nix
 (my "thing" {cli = false;})
 ```
+```yaml
+  deployments:
+    needs: [discover]
+    name: Perpare deployment data
+    if: fromJSON(needs.discover.outputs.hits).deployments.apply != '{}'
+    steps:
+      - name: Group deployment
+        id: group
+        shell: bash
+        run: |
+          dev-preview="$(jq 'map(select(.name == \"dev-preview\"))' <<< ${{ toJSON(fromJSON(needs.discover.outputs.hits).deployments.apply) }})"
+          dev-preprod="$(jq 'map(select(.name == \"dev-preprod\"))' <<< ${{ toJSON(fromJSON(needs.discover.outputs.hits).deployments.apply) }})"
+          printf "%s\n" \
+            "dev-preview=$dev-preview" \
+            "dev-preprod=$dev-preprod" \
+              >> "$GITHUB_OUTPUT"
+```
+```yaml
+-        target: ${{ fromJSON(needs.discover.outputs.hits).deployments.apply }}
++        target: ${{ fromJSON(needs.deployments.outputs.dev-preview) }}
+```
