@@ -16,6 +16,28 @@ let
   inherit (options) services;
 in {}
 ```
+```sh
+nixos-generate --flake .#repo-larva -f install-iso
+writedisk /nix/store/*-bootstrap-*-linux.iso/iso/bootstrap-*-linux.iso
+nixos-anywhere --flake .#lina-lavinox root@lavinox
+```
+```nix
+# iso
+let
+  inherit (inputs.hive) bootstrap;
+in {
+  larva = {
+    bee.system = "x86_64-linux";
+    bee.pkgs = inputs.nixos.legacyPackages;
+    imports = [bootstrap.profiles.bootstrap];
+    nix.registry.hive.flake = {inherit (inputs.self) outPath;}; # only handy if you want to execute `disko` from the usb live stick when no network access can be procured
+  };
+}
+```
+```nix
+# devshell
+      imports = [bootstrap.shell.bootstrap];
+```
 # Std
 https://github.com/divnix/std/blob/676d8356a3c2d3bac7aa9e27508c2f6651cfbe0e/src/std/fwlib/blockTypes/pkgs.nix#L12
 ```nix
